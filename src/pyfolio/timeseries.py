@@ -533,14 +533,11 @@ def rolling_beta(returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH 
         return factor_returns.apply(
             partial(rolling_beta, returns), rolling_window=rolling_window
         )
-    else:
-        out = pd.Series(index=returns.index, dtype="float64")
-        for beg, end in zip(
-            returns.index[0:-rolling_window], returns.index[rolling_window:]
-        ):
-            out.loc[end] = ep.beta(returns.loc[beg:end], factor_returns.loc[beg:end])
+    out = pd.Series(index=returns.index, dtype="float64")
+    for beg, end in zip(returns.index[:-rolling_window], returns.index[rolling_window:]):
+        out.loc[end] = ep.beta(returns.loc[beg:end], factor_returns.loc[beg:end])
 
-        return out
+    return out
 
 
 def rolling_regression(
@@ -643,8 +640,7 @@ def value_at_risk(returns, period=None, sigma=2.0):
     else:
         returns_agg = returns.copy()
 
-    value_at_risk = returns_agg.mean() - sigma * returns_agg.std()
-    return value_at_risk
+    return returns_agg.mean() - sigma * returns_agg.std()
 
 
 SIMPLE_STAT_FUNCS = [
@@ -787,11 +783,10 @@ def perf_stats_bootstrap(returns, factor_returns=None, return_stats=True, **kwar
 
     bootstrap_values = pd.DataFrame(bootstrap_values)
 
-    if return_stats:
-        stats = bootstrap_values.apply(calc_distribution_stats)
-        return stats.T[["mean", "median", "5%", "95%"]]
-    else:
+    if not return_stats:
         return bootstrap_values
+    stats = bootstrap_values.apply(calc_distribution_stats)
+    return stats.T[["mean", "median", "5%", "95%"]]
 
 
 def calc_bootstrap(func, returns, *args, **kwargs):
@@ -1201,11 +1196,9 @@ def forecast_cone_bootstrap(
         random_seed=random_seed,
     )
 
-    cone_bounds = summarize_paths(
+    return summarize_paths(
         samples=samples, cone_std=cone_std, starting_value=starting_value
     )
-
-    return cone_bounds
 
 
 def extract_interesting_date_ranges(returns, periods=None):

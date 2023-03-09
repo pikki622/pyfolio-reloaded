@@ -140,9 +140,7 @@ def adjust_returns_for_slippage(returns, positions, transactions, slippage_bps):
     traded_value = get_txn_vol(transactions).txn_volume
     slippage_dollars = traded_value * slippage
     adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
-    adjusted_returns = returns * adjusted_pnl / pnl
-
-    return adjusted_returns
+    return returns * adjusted_pnl / pnl
 
 
 def get_turnover(positions, transactions, denominator="AGB"):
@@ -193,9 +191,7 @@ def get_turnover(positions, transactions, denominator="AGB"):
         denom = positions.sum(axis=1)
     else:
         raise ValueError(
-            "Unexpected value for denominator '{}'. The "
-            "denominator parameter must be either 'AGB'"
-            " or 'portfolio_value'.".format(denominator)
+            f"Unexpected value for denominator '{denominator}'. The denominator parameter must be either 'AGB' or 'portfolio_value'."
         )
 
     denom.index = denom.index.normalize()

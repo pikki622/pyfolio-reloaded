@@ -541,37 +541,14 @@ def _align_and_warn(
 
         if len(missing_stocks) > 5:
 
-            missing_stocks_displayed = (
-                " {} assets were missing factor loadings, including: {}..{}"
-            ).format(
-                len(missing_stocks),
-                ", ".join(missing_stocks[:5].map(str)),
-                missing_stocks[-1],
-            )
+            missing_stocks_displayed = f' {len(missing_stocks)} assets were missing factor loadings, including: {", ".join(missing_stocks[:5].map(str))}..{missing_stocks[-1]}'
             avg_allocation_msg = "selected missing assets"
 
         else:
-            missing_stocks_displayed = (
-                "The following assets were missing factor loadings: {}."
-            ).format(list(missing_stocks))
+            missing_stocks_displayed = f"The following assets were missing factor loadings: {list(missing_stocks)}."
             avg_allocation_msg = "missing assets"
 
-        missing_stocks_warning_msg = (
-            "Could not determine risk exposures for some of this algorithm's "
-            "positions. Returns from the missing assets will not be properly "
-            "accounted for in performance attribution.\n"
-            "\n"
-            "{}. "
-            "Ignoring for exposure calculation and performance attribution. "
-            "Ratio of assets missing: {}. Average allocation of {}:\n"
-            "\n"
-            "{}.\n"
-        ).format(
-            missing_stocks_displayed,
-            missing_ratio,
-            avg_allocation_msg,
-            positions[missing_stocks[:5].union(missing_stocks[[-1]])].mean(),
-        )
+        missing_stocks_warning_msg = f"Could not determine risk exposures for some of this algorithm's positions. Returns from the missing assets will not be properly accounted for in performance attribution.\n\n{missing_stocks_displayed}. Ignoring for exposure calculation and performance attribution. Ratio of assets missing: {missing_ratio}. Average allocation of {avg_allocation_msg}:\n\n{positions[missing_stocks[:5].union(missing_stocks[[-1]])].mean()}.\n"
 
         warnings.warn(missing_stocks_warning_msg)
 
@@ -584,19 +561,11 @@ def _align_and_warn(
     if len(missing_factor_loadings_index) > 0:
 
         if len(missing_factor_loadings_index) > 5:
-            missing_dates_displayed = (
-                "(first missing is {}, last missing is {})"
-            ).format(
-                missing_factor_loadings_index[0],
-                missing_factor_loadings_index[-1],
-            )
+            missing_dates_displayed = f"(first missing is {missing_factor_loadings_index[0]}, last missing is {missing_factor_loadings_index[-1]})"
         else:
             missing_dates_displayed = list(missing_factor_loadings_index)
 
-        warning_msg = (
-            "Could not find factor loadings for {} dates: {}. "
-            "Truncating date range for performance attribution. "
-        ).format(len(missing_factor_loadings_index), missing_dates_displayed)
+        warning_msg = f"Could not find factor loadings for {len(missing_factor_loadings_index)} dates: {missing_dates_displayed}. Truncating date range for performance attribution. "
 
         warnings.warn(warning_msg)
 

@@ -167,7 +167,7 @@ def plot_monthly_returns_heatmap(returns, ax=None, **kwargs):
     monthly_ret_table = monthly_ret_table.unstack().round(3)
 
     monthly_ret_table.rename(
-        columns={i: m for i, m in enumerate(calendar.month_abbr)}, inplace=True
+        columns=dict(enumerate(calendar.month_abbr)), inplace=True
     )
 
     sns.heatmap(
@@ -392,8 +392,8 @@ def plot_long_short_holdings(
     leg = ax.legend(
         [lf, sf, bf],
         [
-            "Long (max: %s, min: %s)" % (df_longs.max(), df_longs.min()),
-            "Short (max: %s, min: %s)" % (df_shorts.max(), df_shorts.min()),
+            f"Long (max: {df_longs.max()}, min: {df_longs.min()})",
+            f"Short (max: {df_shorts.max()}, min: {df_shorts.min()})",
             "Overlap",
         ],
         loc=legend_loc,
@@ -663,7 +663,7 @@ def show_perf_stats(
     for column in perf_stats.columns:
         for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:
-                perf_stats.loc[stat, column] = str(np.round(value * 100, 3)) + "%"
+                perf_stats.loc[stat, column] = f"{str(np.round(value * 100, 3))}%"
     if header_rows is None:
         header_rows = date_rows
     else:
@@ -795,7 +795,7 @@ def plot_rolling_returns(
 
     if volatility_match and factor_returns is None:
         raise ValueError("volatility_match requires passing of factor_returns.")
-    elif volatility_match and factor_returns is not None:
+    elif volatility_match:
         bmark_vol = factor_returns.loc[returns.index].std()
         returns = (returns / returns.std()) * bmark_vol
 
@@ -893,7 +893,7 @@ def plot_rolling_beta(returns, factor_returns, legend_loc="best", ax=None, **kwa
     y_axis_formatter = FuncFormatter(utils.two_dec_places)
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
-    ax.set_title("Rolling portfolio beta to " + str(factor_returns.name))
+    ax.set_title(f"Rolling portfolio beta to {str(factor_returns.name)}")
     ax.set_ylabel("Beta")
     rb_1 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 6
@@ -1195,7 +1195,7 @@ def show_and_plot_top_positions(
 
     df_top_long, df_top_short, df_top_abs = pos.get_top_long_short_abs(positions_alloc)
 
-    if show_and_plot == 1 or show_and_plot == 2:
+    if show_and_plot in [1, 2]:
         utils.print_table(
             pd.DataFrame(df_top_long * 100, columns=["max"]),
             float_format="{0:.2f}%".format,
@@ -1214,7 +1214,7 @@ def show_and_plot_top_positions(
             name="Top 10 positions of all time",
         )
 
-    if show_and_plot == 0 or show_and_plot == 2:
+    if show_and_plot in [0, 2]:
 
         if ax is None:
             ax = plt.gca()
@@ -1522,7 +1522,7 @@ def plot_slippage_sweep(
         adj_returns = txn.adjust_returns_for_slippage(
             returns, positions, transactions, bps
         )
-        label = str(bps) + " bps"
+        label = f"{str(bps)} bps"
         slippage_sweep[label] = ep.cum_returns(adj_returns, 1)
 
     slippage_sweep.plot(alpha=1.0, lw=0.5, ax=ax)
@@ -2046,9 +2046,9 @@ def plot_cones(
     for c in range(num_strikes + 1):
         if c > 0:
             tmp = returns.loc[cone_start:]
-            bounds_tmp = bounds_tmp.iloc[0 : len(tmp)]
+            bounds_tmp = bounds_tmp.iloc[:len(tmp)]
             bounds_tmp = bounds_tmp.set_index(tmp.index)
-            crossing = tmp < bounds_tmp[float(-2.0)].iloc[: len(tmp)]
+            crossing = tmp < bounds_tmp[-2.0].iloc[: len(tmp)]
             if crossing.sum() <= 0:
                 break
             cone_start = crossing.loc[crossing].index[0]
@@ -2069,7 +2069,4 @@ def plot_cones(
     axes.axhline(1, color="black", alpha=0.2)
     axes.legend(frameon=True, framealpha=0.5)
 
-    if ax is None:
-        return fig
-    else:
-        return axes
+    return fig if ax is None else axes

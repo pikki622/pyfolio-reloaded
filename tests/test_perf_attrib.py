@@ -49,7 +49,7 @@ def generate_toy_risk_model_output(start_date="2017-01-01", periods=10, num_styl
     dts = pd.date_range(start_date, periods=periods)
     np.random.seed(123)
     tickers = ["AAPL", "TLT", "XOM"]
-    styles = ["factor{}".format(i) for i in range(num_styles)]
+    styles = [f"factor{i}" for i in range(num_styles)]
 
     returns = pd.Series(index=dts, data=np.random.randn(periods)) / 100
 
@@ -450,8 +450,7 @@ class PerfAttribTestCase(unittest.TestCase):
             w_ = [warn for warn in w if issubclass(warn.category, UserWarning)]
             self.assertEqual(len(w_), 2)
             self.assertIn(
-                "Could not find factor loadings for "
-                "{} dates".format(len(missing_dates)),
+                f"Could not find factor loadings for {len(missing_dates)} dates",
                 str(w_[-1].message),
             )
 
@@ -469,8 +468,7 @@ class PerfAttribTestCase(unittest.TestCase):
             w_ = [warn for warn in w if issubclass(warn.category, UserWarning)]
             self.assertEqual(len(w_), 3)
             self.assertIn(
-                "Could not find factor loadings for "
-                "{} dates".format(len(missing_dates)),
+                f"Could not find factor loadings for {len(missing_dates)} dates",
                 str(w_[-1].message),
             )
 
@@ -498,8 +496,7 @@ class PerfAttribTestCase(unittest.TestCase):
             self.assertIn("Ratio of assets missing: 0.333", str(w_[-2].message))
 
             self.assertIn(
-                "Could not find factor loadings for "
-                "{} dates".format(len(missing_dates)),
+                f"Could not find factor loadings for {len(missing_dates)} dates",
                 str(w_[-1].message),
             )
             for date in missing_dates:

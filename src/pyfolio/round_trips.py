@@ -375,8 +375,7 @@ def gen_round_trip_stats(round_trips):
     round_trips.print_round_trip_stats
     """
 
-    stats = {}
-    stats["pnl"] = agg_all_long_short(round_trips, "pnl", PNL_STATS)
+    stats = {"pnl": agg_all_long_short(round_trips, "pnl", PNL_STATS)}
     stats["summary"] = agg_all_long_short(round_trips, "pnl", SUMMARY_STATS)
     stats["duration"] = agg_all_long_short(round_trips, "duration", DURATION_STATS)
     stats["returns"] = agg_all_long_short(round_trips, "returns", RETURN_STATS)
